@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horror Hiding System - Documentation</title>
+    <style>
+        :root {
+            --primary-color: #4daafc;
+            --primary-hover: #2b8ce0;
+            --text-color: #e0e0e0;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --border-color: #333333;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #1a1a1a;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 4px solid var(--primary-color);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        header p {
+            margin: 5px 0 0 0;
+            color: #cccccc;
+            font-size: 1rem;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        /* Sidebar Styling */
+        aside.sidebar {
+            width: 260px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 40px;
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border: 1px solid var(--border-color);
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        aside.sidebar h3 {
+            margin-top: 0;
+            color: #fff;
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        aside.sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        aside.sidebar ul li {
+            margin-bottom: 8px;
+        }
+
+        aside.sidebar ul li ul {
+            padding-left: 15px;
+            margin-top: 5px;
+            border-left: 1px solid var(--border-color);
+            margin-left: 5px;
+        }
+
+        aside.sidebar a {
+            color: #aaaaaa;
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        aside.sidebar a:hover {
+            color: #ffffff;
+            background-color: rgba(77, 170, 252, 0.1);
+        }
+
+        /* Scrollbar customization for sidebar */
+        aside.sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        aside.sidebar::-webkit-scrollbar-thumb {
+            background-color: #444;
+            border-radius: 4px;
+        }
+
+        /* Main Content Styling */
+        main {
+            flex-grow: 1;
+            min-width: 0;
+            background-color: var(--card-bg);
+            padding: 40px 50px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border: 1px solid var(--border-color);
+        }
+
+        h2, h3 {
+            scroll-margin-top: 40px;
+        }
+
+        h2 {
+            color: #ffffff;
+            margin-top: 45px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            font-size: 1.75rem;
+        }
+        
+        h2:first-of-type {
+            margin-top: 0;
+        }
+
+        main h3 {
+            color: var(--primary-color);
+            margin-top: 35px;
+            font-size: 1.25rem;
+        }
+
+        /* Images inside content */
+        .img-container {
+            position: relative;
+            display: inline-block;
+            margin: 25px 0;
+            cursor: zoom-in;
+            width: 100%;
+        }
+        
+        main img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #444444;
+            border-radius: 6px;
+            display: block;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            width: 100%;
+        }
+        
+        .img-container:hover img {
+            transform: scale(1.02);
+            box-shadow: 0 6px 20px rgba(77, 170, 252, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        /* Modal / Lightbox Styling */
+        #image-modal {
+            display: none; 
+            position: fixed; 
+            z-index: 9999; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden; 
+            background-color: rgba(0, 0, 0, 0.85); 
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #image-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 90vh;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            object-fit: contain;
+            cursor: zoom-in;
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .modal-content.zoomed {
+            cursor: grab;
+        }
+        
+        .modal-content.zoomed:active {
+            cursor: grabbing;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: #ffffff;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+            z-index: 10000;
+        }
+
+        .close-modal:hover,
+        .close-modal:focus {
+            color: var(--primary-color);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Other elements */
+        code {
+            background: #2b2b2b;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
+            color: #ff8fb8;
+            border: 1px solid #404040;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #252525;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        th {
+            background-color: #1a1a1a;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        ul.content-list, ol.content-list {
+            padding-left: 25px;
+        }
+
+        .content-list li {
+            margin-bottom: 10px;
+        }
+
+        .img-fallback {
+            background-color: #1a1a1a;
+            border: 2px dashed #555;
+            padding: 40px;
+            text-align: center;
+            color: #aaaaaa;
+            border-radius: 6px;
+            font-family: Consolas, monospace;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .img-fallback strong {
+            color: #4daafc;
+            font-size: 1.1em;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+                margin: 20px auto;
+            }
+            aside.sidebar {
+                width: auto;
+                position: static;
+                max-height: none;
+                margin-bottom: 20px;
+            }
+            main {
+                padding: 25px;
+            }
+            .close-modal {
+                top: 10px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Horror Hiding System</h1>
+    <p>Documentation &amp; User Guide</p>
+</header>
+
+<div class="container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <h3>Contents</h3>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#migration">Migrating To Your Project</a>
+                <ul>
+                    <li><a href="#step-1">1. Migrate the Files</a></li>
+                    <li><a href="#step-2">2. Global Variables</a></li>
+                    <li><a href="#step-3">3. Required Inputs</a></li>
+                    <li><a href="#step-4">4. Add Components</a></li>
+                </ul>
+            </li>
+            <li><a href="#using-actor">Using the Hiding Actor</a></li>
+            <li><a href="#variables">Variables Overview</a>
+                <ul>
+                    <li><a href="#var-mesh">Static Mesh Variables</a></li>
+                    <li><a href="#var-camera">Camera Variables</a></li>
+                    <li><a href="#var-general">General Variables</a></li>
+                    <li><a href="#var-door">Door Variables</a></li>
+                </ul>
+            </li>
+            <li><a href="#inside-interaction">Inside Interaction</a></li>
+            <li><a href="#function-library">Function Library</a></li>
+            <li><a href="#summary">Summary</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main>
+        <h2 id="overview">Overview &amp; Basic Explanation</h2>
+        <p>The <strong>Horror Hiding System</strong> allows players to hide inside objects such as lockers, closets, or other hiding spots seamlessly.</p>
+        
+        <p>When the player interacts with a hiding object:</p>
+        <ol class="content-list">
+            <li>The player is moved to a hidden location inside the object.</li>
+            <li>The camera transitions to the hiding object's camera.</li>
+            <li>The player's original location is saved.</li>
+            <li>When exiting, the player is returned to their saved location.</li>
+        </ol>
+
+        <p>While hidden, the player can:</p>
+        <ul class="content-list">
+            <li>Look around (if enabled)</li>
+            <li>Close or open the door (if available)</li>
+            <li>Turn the flashlight on or off</li>
+            <li>Perform other interactions depending on enabled variables</li>
+        </ul>
+        <p><em>All features are controlled through variables, so you can easily customize behavior directly from the Details Panel.</em></p>
+
+        <h2 id="migration">Migrating It To Your Project</h2>
+
+        <h3 id="step-1">1. Migrate the Files</h3>
+        <p>In the Horror Hiding project:</p>
+        <ol class="content-list">
+            <li>Locate the folder <code>_Horror_hiding</code></li>
+            <li>Right-click it and select <strong>Migrate</strong></li>
+            <li>Choose your target project</li>
+        </ol>
+        <p>This will copy all required files into your own game project.</p>
+
+        <div class="img-container">
+            <img src="first.png" alt="Migrating Files" onerror="this.outerHTML='<div class=\'img-fallback\'>📸 <strong>first.png</strong><br><small>Save your screenshot as first.png</small></div>'">
+        </div>
+
+        <h3 id="step-2">2. Configure Global Variables</h3>
+        <p>Open <code>FL_Common</code> and find the function <strong>GlobalVars</strong>.</p>
+        <ul class="content-list">
+            <li>Set your Main Character in the character reference.</li>
+            <li>You may need to change the output type to match your character.</li>
+            <li>Assign your Input Mapping Context in the output.</li>
+        </ul>
+
+        <div class="img-container">
+            <img src="second.png" alt="Configure Global Variables" onerror="this.outerHTML='<div class=\'img-fallback\'>📸 <strong>second.png</strong><br><small>Save your screenshot as second.png</small></div>'">
+        </div>
+
+        <h3 id="step-3">3. Add Required Inputs</h3>
+        <p>Open your Input Mapping Context and add the following Actions:</p>
+        <ul class="content-list">
+            <li><code>IA_Interact</code></li>
+            <li><code>IA_InteractInside</code></li>
+            <li><code>IA_Flashlight</code></li>
+        </ul>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Input Action</th>
+                    <th>Example Key</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>IA_Interact</code></td>
+                    <td>E</td>
+                </tr>
+                <tr>
+                    <td><code>IA_InteractInside</code></td>
+                    <td>R</td>
+                </tr>
+                <tr>
+                    <td><code>IA_Flashlight</code></td>
+                    <td>F</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 id="step-4">4. Add Components to Your Character</h3>
+        <p>Open your Main Character Blueprint and add the following components:</p>
+        <ul class="content-list">
+            <li><code>AC_Hiding</code> (Controls the hiding system logic)</li>
+            <li><code>AC_Prompt</code> (Controls the interaction prompts)</li>
+        </ul>
+
+        <h2 id="using-actor">Using the Hiding Actor</h2>
+        <p>You do <strong>NOT</strong> need to create a child blueprint of the Horror Hiding BP.</p>
+        <ol class="content-list">
+            <li>Drag the Horror Hiding BP directly into the level.</li>
+            <li>Adjust the variables from the Details Panel.</li>
+        </ol>
+
+        <h2 id="variables">Variables Overview</h2>
+
+        <h3 id="var-mesh">Static Mesh Variables</h3>
+        <p>You can assign the main hiding object mesh directly from the Details Panel. You can also adjust its Transform, Position, Rotation, and Scale.</p>
+        <p><strong>Second Static Mesh (Door)</strong><br>
+        If your hiding object has a door:</p>
+        <ol class="content-list">
+            <li>Assign the door mesh to <em>Second Static Mesh</em>.</li>
+            <li>Enable the variable: <code>Has Second Static Mesh = True</code>.</li>
+        </ol>
+        <p>This will automatically activate the door interaction system.</p>
+
+        <h3 id="var-camera">Camera Variables</h3>
+        <p>These variables control the behavior of the camera while hiding:</p>
+        <ul class="content-list">
+            <li><strong>Camera Transform:</strong> Controls the position and rotation of the hiding camera.</li>
+            <li><strong>Camera FOV:</strong> Adjusts the field of view while inside the hiding spot.</li>
+            <li><strong>Look Around:</strong> Enable or disable the player's ability to look around while hiding.</li>
+            <li><strong>Flashlight Options:</strong> Enable/Disable flashlight, intensity, and target arm length.</li>
+            <li><strong>Camera Transition:</strong> Customize camera transitions (Enable fade transition, adjust switching speed).</li>
+        </ul>
+
+        <h3 id="var-general">General Variables (Hold Interaction)</h3>
+        <p>This allows the player to hold the interaction key instead of tapping it. Useful in scenarios like being chased by enemies, where entering a hiding spot should take time.</p>
+        <ul class="content-list">
+            <li><strong>Hold Interaction (Bool):</strong> Enables hold-to-interact behavior.</li>
+            <li><strong>Hold Duration:</strong> How long the player must hold the interaction key to hide.</li>
+        </ul>
+
+        <h3 id="var-door">Door Variables</h3>
+        <p>These variables control how the door behaves:</p>
+        <ul class="content-list">
+            <li><strong>Rotatable Door:</strong> Enables door rotation.</li>
+            <li><strong>Inverse Door Rotation:</strong> Reverses the direction the door opens.</li>
+            <li><strong>Door Speed:</strong> Controls how fast the door opens or closes.</li>
+            <li><strong>Door Sound:</strong> Allows you to assign a sound effect when the door is used.</li>
+        </ul>
+
+        <h2 id="inside-interaction">Inside Interaction</h2>
+        <p>The system allows interactions while the player is hidden. Currently supported:</p>
+        <ul class="content-list">
+            <li><strong>Door Interaction:</strong> If a door mesh is present, the player can open or close the door while hiding.</li>
+        </ul>
+        <p><em>You can also easily extend this system to add your own custom inside-interactions.</em></p>
+
+        <h2 id="function-library">Function Library – Global Settings</h2>
+        <p>There is a Function Library used across the system to handle important references.</p>
+        <ul class="content-list">
+            <li><strong>Location:</strong> <code>FL_Common</code></li>
+            <li><strong>Function:</strong> <code>GlobalVars</code></li>
+        </ul>
+        <p>Inside this function, you can change input system references, player character casts, and the cast used to access <code>AC_Hiding</code>.</p>
+
+        <h2 id="summary">Summary</h2>
+        <p>To use the system:</p>
+        <ol class="content-list">
+            <li>Place the Horror Hiding BP in the level.</li>
+            <li>Assign a Static Mesh.</li>
+            <li>Adjust the camera settings.</li>
+            <li>Enable optional features such as Door interaction, Flashlight, Look around, or Hold interaction.</li>
+            <li>Configure additional behavior through the Details Panel variables.</li>
+        </ol>
+        <p><strong>No additional setup or child blueprints are required!</strong></p>
+
+    </main>
+</div>
+
+<!-- Modal Container for Zooming Images -->
+<div id="image-modal">
+    <span class="close-modal">&times;</span>
+    <img class="modal-content" id="zoomed-image" alt="Zoomed Interface">
+</div>
+
+<!-- Scripts for Image Drag and Zoom feature -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const modal = document.getElementById("image-modal");
+        const modalImg = document.getElementById("zoomed-image");
+        const closeBtn = document.querySelector(".close-modal");
+        
+        const images = document.querySelectorAll("main img");
+        
+        let isZoomed = false;
+        let isDragging = false;
+        let startX, startY;
+        let translateX = 0, translateY = 0;
+        let dragDistance = 0;
+
+        // Open modal when an image is clicked
+        images.forEach(img => {
+            // Need to apply listener to the container if we have text overlay on top of it
+            const container = img.closest('.img-container') || img;
+            container.addEventListener("click", function(e) {
+                modal.classList.add("show");
+                modalImg.src = img.src;
+                modalImg.classList.remove("zoomed"); 
+                modalImg.style.transform = "scale(1) translate(0px, 0px)";
+                isZoomed = false;
+                translateX = 0;
+                translateY = 0;
+            });
+        });
+
+        // Start dragging
+        modalImg.addEventListener("mousedown", function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (isZoomed) {
+                isDragging = true;
+                dragDistance = 0;
+                startX = e.clientX - translateX * 2.5;
+                startY = e.clientY - translateY * 2.5;
+                this.style.transition = "none";
+            }
+        });
+
+        // Handle dragging
+        window.addEventListener("mousemove", function(e) {
+            if (isDragging && isZoomed) {
+                dragDistance += Math.abs(e.movementX) + Math.abs(e.movementY);
+                translateX = (e.clientX - startX) / 2.5;
+                translateY = (e.clientY - startY) / 2.5;
+                modalImg.style.transform = `scale(2.5) translate(${translateX}px, ${translateY}px)`;
+            }
+        });
+
+        // Stop dragging
+        window.addEventListener("mouseup", function(e) {
+            if (isDragging) {
+                isDragging = false;
+                modalImg.style.transition = "transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)";
+            }
+        });
+
+        // Click to toggle zoom in/out
+        modalImg.addEventListener("click", function(e) {
+            e.stopPropagation(); 
+            if (dragDistance > 5) {
+                dragDistance = 0; 
+                return; 
+            }
+            
+            isZoomed = !isZoomed;
+            
+            if (isZoomed) {
+                this.classList.add("zoomed");
+                translateX = 0;
+                translateY = 0;
+                this.style.transform = `scale(2.5) translate(0px, 0px)`;
+            } else {
+                this.classList.remove("zoomed");
+                translateX = 0;
+                translateY = 0;
+                this.style.transform = `scale(1) translate(0px, 0px)`;
+            }
+        });
+
+        // Close modal function
+        function closeModal() {
+            modal.classList.remove("show");
+            isZoomed = false;
+            isDragging = false;
+            modalImg.classList.remove("zoomed");
+            modalImg.style.transform = `scale(1) translate(0px, 0px)`;
+            setTimeout(() => { modalImg.src = ""; }, 300);
+        }
+
+        closeBtn.addEventListener("click", closeModal);
+        
+        modal.addEventListener("click", function(e) {
+            if (e.target === modal) closeModal();
+        });
+
+        document.addEventListener("keydown", function(e) {
+            if (e.key === "Escape" && modal.classList.contains("show")) {
+                closeModal();
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
